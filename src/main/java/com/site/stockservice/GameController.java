@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
-import java.time.Duration;
-
 import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 
 @RestController
@@ -15,6 +13,7 @@ import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
 public class GameController {
 
     private final GameService service;
+    private final AudioClientWebClient audioClientWebClient;
 
     @GetMapping(value = "/game", produces = TEXT_EVENT_STREAM_VALUE)
     public Flux<Game> game() {
@@ -31,5 +30,12 @@ public class GameController {
     public String restart() {
         service.createNewGame();
         return "Successes restart";
+    }
+
+    @GetMapping("/audio")
+    public String audio() {
+        AudioSubscriber audioSubscriber = new AudioSubscriber();
+        audioClientWebClient.startListeningToAudio().subscribe(audioSubscriber);
+        return "audio";
     }
 }
